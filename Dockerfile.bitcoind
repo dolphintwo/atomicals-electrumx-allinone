@@ -1,0 +1,20 @@
+FROM alpine:3.18 AS downloader
+
+ARG VERSION=25.1
+
+ADD https://bitcoincore.org/bin/bitcoin-core-{VERSION}/bitcoin-{VERSION}-x86_64-linux-gnu.tar.gz /tmp
+RUN set -ex && \
+    cd /tmp && tar -zxvf bitcoin-${VERSION}-x86_64-linux-gnu.tar.gz && \
+    mv /tmp/bitcoin-${VERSION}/bin/bitcoind /tmp
+
+FROM alpine:3.18
+
+COPY --from=downloader /tmp/bitcoind /usr/local/bin/
+ADD bitcoin.conf /root/.bitcoin
+
+WORKDIR /bitcoin-data
+
+EXPOSE 8332
+VOLUME /bitcoin-data
+
+ENTRYPOINT ["bitcoind"]

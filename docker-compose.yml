@@ -1,5 +1,13 @@
 version: '3'
 services:
+  bitcoind:
+    image: dolphintwo/bitcoind:v25.1
+    restart: always
+    ports:
+      - 8332:8332
+    volumes:
+      - ./bitcoin-data:/bitcoin-data
+
   proxy:
     image: lucky2077/atomicals-electrumx-proxy:latest
     restart: always
@@ -26,3 +34,5 @@ services:
       # example: DAEMON_URL=rpcuser:rpcpassword@192.168.50.155:8332
       - DAEMON_URL=${DAEMON_URL:?}
       - COIN=BitCoin
+    depends_on:
+      - bitcoind
